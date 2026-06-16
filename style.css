@@ -1,0 +1,208 @@
+/*BASE RESETS*/
+*{
+    margin : 0;
+    padding : 0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+}
+
+body{
+    background-color : #f4f7f5;
+    color : #333;
+    padding : 20px;
+}
+/*Header Styling*/
+.main-header{
+    text-align : center;
+    margin-bottom:30px;
+    padding : 20px;
+    backgriund : #2e7d32;
+    color : white;
+    border-radius : 8px;
+}
+
+.main-header p{
+    margin-top : 5px;
+    opacity : 0.9;
+}
+
+/* Three-Column Dashboard Grid Layout */
+.dasboard-container{
+    display:grid;
+    grid-template-coloumns:repeat(auto-fit,minmax(300px,1fr));
+    gap : 20px;
+    max-width : 1200px;
+    margin : 0 auto;
+}
+
+/* Card Styling */
+.card{
+    background : white;
+    padding : 25px;
+    border-radius : 8px;
+    box-shadow : 0 4px 6px rgba(0,0,0,0.05);
+    border-top : 5px solid #2e7d32;
+
+}
+
+.card h2{
+    color : #1b5e20;
+    margin-bottom : 15 px;
+    font-size : 1.4rem;
+}
+
+/* AQI Badge elements */
+.aqi-badge{
+    background: #fff3e0;
+    border-left : 4px solid #ff9800;
+    padding : 15px;
+    margin-bottom : 20px;
+    border-radius: 4px;
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.aqi-num{
+    font-size : 2rem;
+    font-weight : bold;
+    color : #e65100;
+}
+
+/* Custom Lists */
+ul{
+    list-style : none;
+}
+ul li{
+    padding : 10px 0;
+    border-bottom : 1px solid #eee;
+
+}
+/* Leaderboard & Item rows */
+.leader-item, .campaign-item {
+    background: #f9f9f9;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.leader-item strong, .campaign-item h4 {
+    display: block;
+    color: #333;
+}
+
+.leader-item span {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    background: #2e7d32;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background: #1b5e20;
+}
+
+/* Footer Styling */
+.main-footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #888;
+    font-size: 0.9rem;
+}
+/* --- NEW INTERACTIVE STYLES --- */
+
+/* Form contact and layout items */
+.contact-info {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 8px 0;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Reporting Box Custom Styling */
+.report-box {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 2px dashed #e0e0e0;
+}
+
+.report-box h3 {
+    font-size: 1.1rem;
+    color: #c62828;
+    margin-bottom: 5px;
+}
+
+/* Composting Section Brown Color Profile */
+.compost-box {
+    border-top: 5px solid #6d4c41; 
+}
+
+.compost-box h2 {
+    color: #4e342e;
+}
+
+.section-intro {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.compost-card {
+    background: #efebe9;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.compost-card h4 {
+    color: #4e342e;
+    margin-bottom: 5px;
+}
+
+/* New Interactive Buttons & Hover states */
+.btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+}
+.btn-secondary:hover { background: #e0e0e0; }
+
+.btn-alert {
+    background: #d32f2f;
+    display: block;
+    width: 100%;
+}
+.btn-alert:hover { background: #b71c1c; }
+
+.btn-compost {
+    background: #8d6e63;
+    display: block;
+    width: 100%;
+}
+.btn-compost:hover { background: #6d4c41; }
+hr{
+    border: solid color(rgb rgb(15, 15, 15));
+    background-origin: padding-box;
+    color : rgb(rgb(213, 118, 118));
+}

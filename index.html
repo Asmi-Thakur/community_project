@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width = device-width,initial-scale = 1.0">
+    <title>EcoTrack Goregaon</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="main-header">
+        <h1>EcoTrack:Goregaon Eco-Dashboard</h1>
+        <p>Spotting waste,tracking impact,and cleaning Mumbai together.</p>
+    </header>
+    <main class="dashboard-container">
+
+        <!--SECTION 1:POLLUTION INDEX-->
+
+        <section class="card pollution-box">
+            <h2>Goregaon Pollution Index</h2>
+            <div class="aqi-badge">
+                <span class="aqi-num">75</span>
+                <span class="aqi-status">Moderate (current)</span>
+            </div>
+            <h3>Critical Hotspots : </h3>
+            <ul>
+                <li>⚠️ Aarey Colony (International Road Litter)</li>
+                <li>⚠️ Oshiwara River Bank(Plastic clogging)</li>
+                <li>⚠️ WEH Metro Junctions(Dust/Debris)</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 2: NEARBY CAMPAIGNS & CONTACTS -->
+        <section class="card campaign-box">
+            <h2>Active Campaigns</h2>
+            <p>Click below to register or contact the coordinators directly via phone:</p>
+
+            <div class="campaign-item">
+                <h4>Aarey Forest Clean-Up Drive</h4>
+                <p><strong>Org:</strong> Earth5R | <strong>Date:</strong> Saturday</p>
+                <p class="contact-info">📞 Coordinator: +91 98765 43210</p>
+                <div class="action-buttons">
+                    <!-- Paste your Google Form URL inside href="..." -->
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfRad61woTZu24SVTiP5c19MCxkh9Nwj5m_m9GhPQUNgiiftA/viewform?usp=header"
+                        target="_blank" class="btn">Register via gForm</a>
+                    <a href="tel:+91 8591073889" class="btn btn-secondary">Call Coordinator</a>
+                </div>
+            </div>
+
+            <div class="campaign-item">
+                <h4>Jallosh Coastal Clean-up</h4>
+                <p><strong>Org:</strong> Project Mumbai | <strong>Date:</strong> Next Weekend</p>
+                <p class="contact-info">📞 Coordinator: +91 98765 01234</p>
+                <div class="action-buttons">
+                    <!-- Paste your Google Form URL inside href="..." -->
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScT5Bg3nO4hz_8Oov3rBMi45OaL6nkvok1NahXNwFlqKpDMNQ/viewform?usp=publish-editor"
+                        target="_blank" class="btn">Register via gForm</a>
+                    <a href="tel:+91 8591073889" class="btn btn-secondary">Call Coordinator</a>
+                </div>
+            </div>
+        </section>
+
+        <!--SECTION3:CAMPAIGNS YOU CAN JOIN-->>
+        <section class="card campaign-box">
+            <h2>Nearby Campaign</h2>
+            <div class="campaign-item">
+                <h4>Aarey Forest-Clean-UP Drive</h4>
+                <p><strong>Date:</strong>Coming Saturday | <strong>Org:</strong>Earth5R</p>
+                <button class="btn" onclick="confirmVolunteer()">Volunteer Now</button>
+              
+            </div>
+        </section>
+        <!-- includes the gForm solution reporting -->
+        <div class="report-box">
+            <h3>Found a new dump site?</h3>
+            <p>Report it directly to our core cleanup team. You can also suggest home-composting solutions for wet waste
+                accumulation!</p>
+            <a href="https://forms.google.com/YOUR-REPORT-FORM" target="_blank" class="btn btn-alert">Report Site /
+                Submit Solution</a>
+        </div>
+        <!-- SECTION 3: WET WASTE & COMPOSTING AWARENESS (NEW 3RD GROUP) -->
+        <section class="card compost-box">
+            <h2>Wet Waste & Composting Hub</h2>
+            <p class="section-intro">Managed by the Goregaon Green Warriors Group. We teach households how to turn
+                kitchen waste into nutrient-rich soil!</p>
+
+            <div class="compost-card">
+                <h4>Why Compost Kitchen Waste?</h4>
+                <p>Over 60% of Mumbai's household garbage is wet organic waste. Composting at home drastically reduces
+                    landfill strain and cuts down toxic methane emissions.</p>
+            </div>
+
+            <div class="compost-resources">
+                <h4>Quick Composting Guide:</h4>
+                <ul>
+                    <li>🌱 <strong>Step 1:</strong> Separate cooked/raw kitchen waste from plastics.</li>
+                    <li>📦 <strong>Step 2:</strong> Add your waste to a ventilated bin layered with dry leaves or
+                        cocopeat.</li>
+                    <li>🔄 <strong>Step 3:</strong> Stir weekly. Beautiful, nutrient-rich soil is ready in 4–6 weeks!
+                    </li>
+                </ul>
+            </div>
+
+            <a href="https://forms.google.com/YOUR-COMPOST-FORM" target="_blank" class="btn btn-compost">Request a Free
+                Composting Workshop</a>
+        </section>
+    </main>
+    <footer class="main-footer">
+        <p>Built with 💚 to keep Goregaon green.</p><br>
+        <hr>
+        <p>For query:
+        <p><br>
+        <p>+91 8591073889 | kasturihatode@gmail.com</p>
+    </footer>
+    <script>
+    function confirmVolunteer() {
+    let response = confirm("Are you sure you want to volunteer for this campaign?");
+    if (response) {
+        // What happens if they click "Yes/OK"
+        alert("Thank you for volunteering!");
+        // window.location.href = "your-success-page.html"; // Optional redirect
+    } else {
+        // What happens if they click "No/Cancel"
+        console.log("User canceled.");
+    }
+}
+</script>
+</body>
+
+</html>
