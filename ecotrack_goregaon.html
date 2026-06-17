@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EcoTrack Goregaon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --green:#1a6b3c;--green-light:#e8f5ee;--green-mid:#2d8653;
+  --amber:#c97400;--amber-light:#fff7e6;
+  --red:#b91c1c;--red-light:#fef2f2;
+  --blue:#1a56a4;--blue-light:#eff6ff;
+  --bg:#f5f7f5;--surface:#fff;--border:#e0e8e2;
+  --text:#1a2e1f;--muted:#5a6e61;
+  --radius:10px;--shadow:0 2px 8px rgba(0,40,20,0.07);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;position:relative;}
+.watermark{position:fixed;inset:0;pointer-events:none;z-index:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.watermark svg{width:min(70vw,600px);height:auto;opacity:0.045;}
+.header,.tabs-bar,.hero,.main,.footer{position:relative;z-index:1;}
+
+/* Header */
+.header{background:var(--green);color:#fff;padding:0 24px;}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-0.3px;}
+.logo span{color:#7deba8;}
+.nav{display:flex;gap:4px;}
+.nav a{color:rgba(255,255,255,0.8);text-decoration:none;padding:8px 14px;border-radius:6px;font-size:0.88rem;cursor:pointer;transition:background 0.15s;}
+.nav a:hover,.nav a.active{background:rgba(255,255,255,0.15);color:#fff;}
+
+/* Hero strip */
+.hero{background:linear-gradient(135deg,#1a6b3c 0%,#0d3d22 100%);color:#fff;padding:36px 24px 32px;}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;line-height:1.2;margin-bottom:8px;}
+.hero p{opacity:.8;font-size:0.95rem;}
+.aqi-hero{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:14px;padding:20px 28px;text-align:center;min-width:140px;}
+.aqi-num{font-family:'Space Grotesk',sans-serif;font-size:3rem;font-weight:700;color:#ffdb4d;line-height:1;}
+.aqi-label{font-size:0.8rem;opacity:.75;margin-top:4px;text-transform:uppercase;letter-spacing:.5px;}
+.aqi-status{display:inline-block;margin-top:6px;background:#ffdb4d;color:#3d2f00;font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:20px;}
+
+/* Tabs */
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.tabs-inner{max-width:1200px;margin:0 auto;display:flex;padding:0 24px;}
+.tab{padding:14px 20px;font-size:0.9rem;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;transition:all 0.15s;white-space:nowrap;}
+.tab.active{color:var(--green);border-bottom-color:var(--green);}
+.tab:hover{color:var(--text);}
+
+/* Main */
+.main{max-width:1200px;margin:0 auto;padding:28px 24px;}
+.section{display:none;}
+.section.active{display:block;}
+
+/* Weather Grid */
+.weather-intro{font-size:0.9rem;color:var(--muted);margin-bottom:20px;}
+.weather-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:28px;}
+.weather-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.weather-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--green);}
+.weather-card.hot::before{background:#e05c00;}
+.weather-card.cool::before{background:#2277cc;}
+.wc-name{font-size:0.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.wc-temp{font-family:'Space Grotesk',sans-serif;font-size:2.4rem;font-weight:700;color:var(--text);line-height:1;}
+.wc-unit{font-size:1rem;color:var(--muted);}
+.wc-meta{margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;}
+.wc-pill{font-size:0.78rem;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--muted);}
+.wc-pill.rain{background:var(--blue-light);color:var(--blue);border-color:#c3daf5;}
+.loading-pulse{animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.weather-note{font-size:0.8rem;color:var(--muted);background:var(--blue-light);border:1px solid #c3daf5;border-radius:8px;padding:12px 16px;margin-bottom:20px;}
+.refresh-btn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:0.88rem;font-weight:500;cursor:pointer;margin-bottom:20px;font-family:inherit;transition:background 0.15s;}
+.refresh-btn:hover{background:var(--green-mid);}
+.refresh-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* Hotspots */
+.section-heading{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:4px;}
+.section-sub{font-size:0.88rem;color:var(--muted);margin-bottom:20px;}
+.hotspot-list{display:flex;flex-direction:column;gap:12px;}
+.hotspot{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);}
+.hotspot-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.hotspot-icon.high{background:#fef2f2;}
+.hotspot-icon.med{background:#fff7ed;}
+.hs-name{font-weight:600;font-size:0.95rem;}
+.hs-desc{font-size:0.83rem;color:var(--muted);margin-top:2px;}
+.hs-badge{margin-left:auto;font-size:0.75rem;font-weight:600;padding:4px 12px;border-radius:20px;white-space:nowrap;}
+.hs-badge.high{background:#fef2f2;color:var(--red);}
+.hs-badge.med{background:#fff7ed;color:#c97400;}
+
+/* Campaigns */
+.campaigns-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.camp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);}
+.camp-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.camp-title{font-weight:600;font-size:1rem;line-height:1.3;}
+.camp-badge{font-size:0.72rem;font-weight:600;padding:3px 10px;border-radius:20px;flex-shrink:0;margin-left:8px;}
+.camp-badge.active{background:#e8f5ee;color:var(--green);}
+.camp-badge.upcoming{background:var(--amber-light);color:var(--amber);}
+.camp-org{font-size:0.82rem;color:var(--muted);margin-bottom:10px;}
+.camp-meta{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.camp-row{display:flex;align-items:flex-start;gap:8px;font-size:0.84rem;}
+.camp-row-icon{color:var(--muted);flex-shrink:0;margin-top:1px;}
+.camp-row span{color:var(--muted);}
+.camp-row strong{color:var(--text);}
+.camp-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn{display:inline-block;padding:8px 16px;border-radius:8px;font-size:0.85rem;font-weight:500;cursor:pointer;text-decoration:none;border:none;font-family:inherit;transition:all 0.15s;}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:hover{background:var(--green-mid);}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-outline:hover{background:var(--bg);}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-danger:hover{background:#991b1b;}
+
+/* Report form */
+.report-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);max-width:720px;}
+.form-group{margin-bottom:20px;}
+.form-label{display:block;font-size:0.85rem;font-weight:600;margin-bottom:6px;color:var(--text);}
+.form-label span{color:var(--red);margin-left:2px;}
+.form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:0.9rem;font-family:inherit;color:var(--text);background:var(--surface);transition:border-color 0.15s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(26,107,60,0.1);}
+.form-textarea{resize:vertical;min-height:100px;}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--bg);position:relative;}
+.upload-zone:hover{border-color:var(--green);background:var(--green-light);}
+.upload-zone.drag-over{border-color:var(--green);background:var(--green-light);}
+.upload-icon{font-size:2rem;margin-bottom:8px;color:var(--muted);}
+.upload-text{font-size:0.9rem;color:var(--muted);}
+.upload-text strong{color:var(--green);}
+.upload-sub{font-size:0.78rem;color:var(--muted);margin-top:4px;}
+#fileInput{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:14px;}
+.preview-item{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.preview-item img{width:100%;height:100%;object-fit:cover;}
+.preview-remove{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.7rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.severity-group{display:flex;gap:8px;flex-wrap:wrap;}
+.severity-btn{padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:0.83rem;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.severity-btn.selected.low{background:#e8f5ee;border-color:#a7d5b8;color:var(--green);}
+.severity-btn.selected.med{background:#fff7ed;border-color:#fbbf84;color:var(--amber);}
+.severity-btn.selected.high{background:var(--red-light);border-color:#fca5a5;color:var(--red);}
+.submit-btn{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;}
+.submit-btn:hover{background:var(--green-mid);}
+.success-banner{background:#e8f5ee;border:1px solid #a7d5b8;border-radius:8px;padding:16px 20px;color:var(--green);font-weight:500;margin-bottom:20px;display:none;}
+
+/* Composting */
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:20px;}
+.info-card h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;margin-bottom:12px;}
+.steps-list{display:flex;flex-direction:column;gap:12px;}
+.step{display:flex;gap:14px;align-items:flex-start;}
+.step-num{width:28px;height:28px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.step-text{font-size:0.9rem;line-height:1.5;}
+.step-text strong{color:var(--green);}
+.tip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:16px;}
+.tip{background:var(--green-light);border:1px solid #c3dba8;border-radius:8px;padding:14px 16px;font-size:0.85rem;line-height:1.5;}
+.tip strong{display:block;color:var(--green);margin-bottom:4px;font-size:0.88rem;}
+
+/* Footer */
+.footer{background:var(--text);color:rgba(255,255,255,0.7);text-align:center;padding:28px 24px;font-size:0.85rem;margin-top:48px;}
+.footer a{color:rgba(255,255,255,0.9);text-decoration:none;}
+
+/* Responsive */
+@media(max-width:640px){
+  .hero-inner{grid-template-columns:1fr;}
+  .aqi-hero{display:none;}
+  .form-row{grid-template-columns:1fr;}
+  .tabs-inner{overflow-x:auto;}
+  .header-inner{gap:12px;}
+  .nav{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="watermark" aria-hidden="true">
+  <svg viewBox="0 0 500 510" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <path d="M250 60 C310 80 420 140 400 260 C380 370 290 430 250 450 C210 430 120 370 100 260 C80 140 190 80 250 60Z" fill="#1a6b3c"/>
+    <line x1="250" y1="70" x2="250" y2="440" stroke="#fff" stroke-width="5"/>
+    <line x1="250" y1="160" x2="160" y2="230" stroke="#fff" stroke-width="3"/>
+    <line x1="250" y1="200" x2="340" y2="260" stroke="#fff" stroke-width="3"/>
+    <line x1="250" y1="250" x2="145" y2="305" stroke="#fff" stroke-width="2.5"/>
+    <line x1="250" y1="290" x2="355" y2="335" stroke="#fff" stroke-width="2.5"/>
+    <line x1="250" y1="340" x2="170" y2="380" stroke="#fff" stroke-width="2"/>
+    <text x="250" y="498" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="700" fill="#1a6b3c" letter-spacing="4">ECOTRACK · GOREGAON</text>
+  </svg>
+</div>
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">Eco<span>Track</span> Goregaon</div>
+    <nav class="nav">
+      <a class="active" onclick="switchTab('weather')">Weather</a>
+      <a onclick="switchTab('campaigns')">Campaigns</a>
+      <a onclick="switchTab('report')">Report Site</a>
+      <a onclick="switchTab('compost')">Composting</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <h1>Goregaon Eco-Dashboard</h1>
+      <p>Spotting waste, tracking impact, and cleaning Mumbai together.</p>
+    </div>
+    <div class="aqi-hero">
+      <div class="aqi-num" id="heroAqi">75</div>
+      <div class="aqi-label">AQI Index</div>
+      <div class="aqi-status" id="heroStatus">Moderate</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs-bar">
+  <div class="tabs-inner">
+    <div class="tab active" onclick="switchTab('weather')">🌡 Weather</div>
+    <div class="tab" onclick="switchTab('campaigns')">📣 Campaigns</div>
+    <div class="tab" onclick="switchTab('report')">📍 Report Site</div>
+    <div class="tab" onclick="switchTab('compost')">🌱 Composting</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- WEATHER TAB -->
+  <div class="section active" id="sec-weather">
+    <p class="weather-intro">Live temperature data fetched from Open-Meteo for key Goregaon localities. Updates every time you visit.</p>
+    <div class="weather-note">📡 Weather data powered by <strong>Open-Meteo</strong> (open-source, no API key required). Temperatures are current readings for each area's coordinates.</div>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadWeather()">↻ Refresh Weather Data</button>
+    <div class="weather-grid" id="weatherGrid">
+      <!-- cards inserted by JS -->
+    </div>
+
+    <div class="section-heading">Critical Pollution Hotspots</div>
+    <p class="section-sub">Identified through community field surveys in Goregaon and surrounding areas.</p>
+    <div class="hotspot-list">
+      <div class="hotspot">
+        <div class="hotspot-icon high">⚠️</div>
+        <div>
+          <div class="hs-name">Aarey Colony — International Road Litter</div>
+          <div class="hs-desc">Plastic waste and food debris along the main road corridor near Aarey Milk Colony.</div>
+        </div>
+        <div class="hs-badge high">High severity</div>
+      </div>
+      <div class="hotspot">
+        <div class="hotspot-icon high">⚠️</div>
+        <div>
+          <div class="hs-name">Oshiwara River Bank — Plastic Clogging</div>
+          <div class="hs-desc">Plastic waste accumulation blocking the natural river flow and causing drainage issues.</div>
+        </div>
+        <div class="hs-badge high">High severity</div>
+      </div>
+      <div class="hotspot">
+        <div class="hotspot-icon med">🔶</div>
+        <div>
+          <div class="hs-name">WEH Metro Junctions — Dust & Debris</div>
+          <div class="hs-desc">Construction dust and debris accumulation near Western Express Highway metro stations.</div>
+        </div>
+        <div class="hs-badge med">Medium severity</div>
+      </div>
+      <div class="hotspot">
+        <div class="hotspot-icon med">🔶</div>
+        <div>
+          <div class="hs-name">Link Road Industrial Pockets</div>
+          <div class="hs-desc">Industrial waste and exhaust near Goregaon East link road commercial zones.</div>
+        </div>
+        <div class="hs-badge med">Medium severity</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMPAIGNS TAB -->
+  <div class="section" id="sec-campaigns">
+    <div class="section-heading">Active & Upcoming Campaigns</div>
+    <p class="section-sub">Join community-organized drives across Goregaon and nearby areas. Register or call the coordinator directly.</p>
+    <div class="campaigns-grid">
+
+      <div class="camp-card">
+        <div class="camp-header">
+          <div class="camp-title">Aarey Forest Clean-Up Drive</div>
+          <div class="camp-badge active">Active</div>
+        </div>
+        <div class="camp-org">Organized by: <strong>Earth5R</strong></div>
+        <div class="camp-meta">
+          <div class="camp-row"><span class="camp-row-icon">📅</span><div><span>Date: </span><strong>This Saturday, June 21, 2026</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">📍</span><div><span>Address: </span><strong>Aarey Milk Colony Gate No. 2, Goregaon East, Mumbai 400065</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">⏰</span><div><span>Time: </span><strong>7:00 AM – 10:00 AM</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">📞</span><div><span>Coordinator: </span><strong>+91 98765 43210</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">👥</span><div><span>Volunteers needed: </span><strong>25 (12 registered)</strong></div></div>
+        </div>
+        <div class="camp-actions">
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfRad61woTZu24SVTiP5c19MCxkh9Nwj5m_m9GhPQUNgiiftA/viewform?usp=header" target="_blank" class="btn btn-primary">Register Now</a>
+          <a href="tel:+919876543210" class="btn btn-outline">📞 Call</a>
+        </div>
+      </div>
+
+      <div class="camp-card">
+        <div class="camp-header">
+          <div class="camp-title">Jallosh Coastal Clean-Up Drive</div>
+          <div class="camp-badge upcoming">Upcoming</div>
+        </div>
+        <div class="camp-org">Organized by: <strong>Project Mumbai</strong></div>
+        <div class="camp-meta">
+          <div class="camp-row"><span class="camp-row-icon">📅</span><div><span>Date: </span><strong>Saturday, June 28, 2026</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">📍</span><div><span>Address: </span><strong>Versova Beach Parking Lot, Andheri West, Mumbai 400061</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">⏰</span><div><span>Time: </span><strong>6:30 AM – 9:30 AM</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">📞</span><div><span>Coordinator: </span><strong>+91 98765 01234</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">👥</span><div><span>Volunteers needed: </span><strong>50 (8 registered)</strong></div></div>
+        </div>
+        <div class="camp-actions">
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLScT5Bg3nO4hz_8Oov3rBMi45OaL6nkvok1NahXNwFlqKpDMNQ/viewform?usp=publish-editor" target="_blank" class="btn btn-primary">Register Now</a>
+          <a href="tel:+919876501234" class="btn btn-outline">📞 Call</a>
+        </div>
+      </div>
+
+      <div class="camp-card">
+        <div class="camp-header">
+          <div class="camp-title">Oshiwara River Bank Restoration</div>
+          <div class="camp-badge upcoming">Upcoming</div>
+        </div>
+        <div class="camp-org">Organized by: <strong>Goregaon Green Warriors</strong></div>
+        <div class="camp-meta">
+          <div class="camp-row"><span class="camp-row-icon">📅</span><div><span>Date: </span><strong>Sunday, July 6, 2026</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">📍</span><div><span>Address: </span><strong>Oshiwara River, near Film City Road, Goregaon West, Mumbai 400104</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">⏰</span><div><span>Time: </span><strong>8:00 AM – 12:00 PM</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">📞</span><div><span>Coordinator: </span><strong>+91 85910 73889</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">👥</span><div><span>Volunteers needed: </span><strong>30 (5 registered)</strong></div></div>
+        </div>
+        <div class="camp-actions">
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfRad61woTZu24SVTiP5c19MCxkh9Nwj5m_m9GhPQUNgiiftA/viewform?usp=header" target="_blank" class="btn btn-primary">Register via gForm</a>
+          <a href="tel:+918591073889" class="btn btn-outline">📞 Call</a>
+        </div>
+      </div>
+
+      <div class="camp-card">
+        <div class="camp-header">
+          <div class="camp-title">Goregaon West Plastic-Free Walk</div>
+          <div class="camp-badge active">Active</div>
+        </div>
+        <div class="camp-org">Organized by: <strong>Mumbai CleanCity NGO</strong></div>
+        <div class="camp-meta">
+          <div class="camp-row"><span class="camp-row-icon">📅</span><div><span>Date: </span><strong>Every Sunday, ongoing</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">📍</span><div><span>Address: </span><strong>Oberoi Mall Gate, S.V. Road, Goregaon West, Mumbai 400104</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">⏰</span><div><span>Time: </span><strong>7:30 AM – 9:00 AM</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">📞</span><div><span>Coordinator: </span><strong>+91 98200 12345</strong></div></div>
+          <div class="camp-row"><span class="camp-row-icon">👥</span><div><span>Open to all — walk-ins welcome</span></div></div>
+        </div>
+        <div class="camp-actions">
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLScT5Bg3nO4hz_8Oov3rBMi45OaL6nkvok1NahXNwFlqKpDMNQ/viewform?usp=publish-editor" target="_blank" class="btn btn-primary">Register via gForm</a>
+          <a href="https://maps.google.com/?q=Oberoi+Mall+Goregaon+West+Mumbai" target="_blank" class="btn btn-outline">📍 View Map</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- REPORT TAB -->
+  <div class="section" id="sec-report">
+    <div class="section-heading">Report a Pollution Site</div>
+    <p class="section-sub">Found a new dump site or pollution hotspot? Document it here — our team reviews and maps every verified report.</p>
+
+    <div class="success-banner" id="successBanner">
+      ✅ Report submitted successfully! Our team will review and map it within 24 hours. Thank you for helping keep Goregaon clean.
+    </div>
+
+    <div class="report-form">
+      <div class="form-group">
+        <label class="form-label">Location / Area Name <span>*</span></label>
+        <input class="form-input" id="locName" placeholder="e.g. Behind Oberoi Mall, Goregaon West" type="text">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nearest Landmark</label>
+          <input class="form-input" id="landmark" placeholder="e.g. Near Poisar Bus Depot" type="text">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pollution Type <span>*</span></label>
+          <select class="form-select" id="pollType">
+            <option value="">Select type...</option>
+            <option>Plastic waste dumping</option>
+            <option>Open sewage / drainage</option>
+            <option>Construction debris</option>
+            <option>Industrial effluent</option>
+            <option>Air pollution source</option>
+            <option>Water body contamination</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Severity Level <span>*</span></label>
+        <div class="severity-group" id="severityGroup">
+          <button class="severity-btn low" onclick="selectSeverity(this,'low')">🟢 Low</button>
+          <button class="severity-btn med" onclick="selectSeverity(this,'med')">🟡 Moderate</button>
+          <button class="severity-btn high" onclick="selectSeverity(this,'high')">🔴 High</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="description" placeholder="Describe what you see — approximate size of dump site, frequency of dumping, any other details..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Upload Photos <span>*</span></label>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(this.files)">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text"><strong>Click to upload</strong> or drag & drop images here</div>
+          <div class="upload-sub">JPG, PNG, WEBP — up to 10 photos, max 5 MB each</div>
+        </div>
+        <div class="preview-grid" id="previewGrid"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input class="form-input" id="reporterName" placeholder="Anonymous if left blank" type="text">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contact (optional)</label>
+          <input class="form-input" id="reporterContact" placeholder="Phone or email" type="text">
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="submitReport()">Submit Report →</button>
+    </div>
+  </div>
+
+  <!-- COMPOSTING TAB -->
+  <div class="section" id="sec-compost">
+    <div class="section-heading">Wet Waste & Composting Hub</div>
+    <p class="section-sub">Managed by the Goregaon Green Warriors Group — turning kitchen waste into nutrient-rich soil.</p>
+
+    <div class="info-card">
+      <h3>Why Compost Your Kitchen Waste?</h3>
+      <p style="font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:16px;">Over 60% of Mumbai's household garbage is wet organic waste. Composting at home drastically reduces landfill strain, eliminates toxic methane emissions, and creates free fertiliser for your plants and gardens.</p>
+      <div class="tip-grid">
+        <div class="tip"><strong>♻️ Reduces landfill load</strong>Organic waste in landfills produces methane — 25× worse than CO₂ for climate impact.</div>
+        <div class="tip"><strong>🌿 Free fertiliser</strong>Finished compost replaces chemical fertilisers and improves soil quality.</div>
+        <div class="tip"><strong>💧 Saves water</strong>Compost-enriched soil holds moisture 3× better, reducing watering needs.</div>
+        <div class="tip"><strong>🐛 No smell, no pests</strong>A well-managed compost bin has no odour and doesn't attract rodents.</div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>Quick Home Composting Guide (3 steps)</h3>
+      <div class="steps-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text"><strong>Separate your waste.</strong> Collect raw and cooked kitchen scraps — vegetable peels, fruit waste, coffee grounds, eggshells. Keep it separate from plastics, glass, and dry waste.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text"><strong>Layer into a ventilated bin.</strong> Add your wet waste into a pot with drainage holes. Layer each addition with dry brown material — dried leaves, cocopeat, or cardboard torn into small bits. The ratio is roughly 1:1 wet to dry.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text"><strong>Stir weekly and wait.</strong> Turn the pile lightly once a week to aerate it. In 4–6 weeks, you'll have dark, crumbly, earth-smelling compost ready to use.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>Request a Free Composting Workshop</h3>
+      <p style="font-size:.9rem;color:var(--muted);margin-bottom:16px;">Our Green Warriors team visits housing societies across Goregaon to run hands-on composting sessions — free of charge.</p>
+      <a href="mailto:kasturihatode@gmail.com?subject=Composting%20Workshop%20Request" class="btn btn-primary">Request a Workshop via Email</a>
+      <a href="tel:+918591073889" class="btn btn-outline" style="margin-left:8px;">📞 Call Us</a>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p>Built with 💚 to keep Goregaon green &nbsp;|&nbsp; EcoTrack Goregaon — S.P.I.T. F.Y. B.Tech Community Project (NEP 2020)</p>
+  <p style="margin-top:8px;"><a href="tel:+918591073889">+91 8591073889</a> &nbsp;|&nbsp; <a href="mailto:kasturihatode@gmail.com">kasturihatode@gmail.com</a></p>
+</footer>
+
+<script>
+const LOCALITIES=[
+  {name:"Goregaon East",lat:19.1663,lon:72.8526},
+  {name:"Goregaon West",lat:19.1604,lon:72.8445},
+  {name:"Aarey Colony",lat:19.1763,lon:72.8714},
+  {name:"Oshiwara",lat:19.1530,lon:72.8330},
+  {name:"Film City Road",lat:19.1710,lon:72.8600},
+  {name:"Malad West",lat:19.1862,lon:72.8484},
+  {name:"Kandivali East",lat:19.2041,lon:72.8615},
+  {name:"Andheri West",lat:19.1275,lon:72.8347}
+];
+
+const wmoDescriptions={0:"Clear sky",1:"Mainly clear",2:"Partly cloudy",3:"Overcast",45:"Foggy",48:"Icy fog",51:"Light drizzle",61:"Slight rain",63:"Moderate rain",80:"Rain showers",95:"Thunderstorm"};
+
+function wmoDesc(code){
+  return wmoDescriptions[code]||"Cloudy";
+}
+
+async function fetchWeather(lat,lon){
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,precipitation,weather_code,relative_humidity_2m,wind_speed_10m&wind_speed_unit=kmh&timezone=Asia/Kolkata`;
+  const r=await fetch(url);
+  const d=await r.json();
+  return d.current;
+}
+
+function tempClass(t){
+  if(t>=34)return'hot';
+  if(t<=25)return'cool';
+  return'';
+}
+
+function buildCard(loc,data){
+  const t=Math.round(data.temperature_2m);
+  const feels=Math.round(data.apparent_temperature);
+  const rain=data.precipitation;
+  const humidity=Math.round(data.relative_humidity_2m);
+  const wind=Math.round(data.wind_speed_10m);
+  const desc=wmoDesc(data.weather_code);
+  const cls=tempClass(t);
+  return`<div class="weather-card ${cls}">
+    <div class="wc-name">${loc.name}</div>
+    <div class="wc-temp">${t}<span class="wc-unit">°C</span></div>
+    <div style="font-size:.82rem;color:var(--muted);margin-top:4px;">${desc} · Feels ${feels}°C</div>
+    <div class="wc-meta">
+      <div class="wc-pill ${rain>0?'rain':''}">💧 ${humidity}% humidity</div>
+      <div class="wc-pill">💨 ${wind} km/h</div>
+      ${rain>0?`<div class="wc-pill rain">🌧 ${rain}mm rain</div>`:''}
+    </div>
+  </div>`;
+}
+
+function buildSkeleton(name){
+  return`<div class="weather-card">
+    <div class="wc-name">${name}</div>
+    <div class="wc-temp loading-pulse" style="background:var(--border);border-radius:4px;height:40px;width:90px;"></div>
+    <div style="margin-top:8px;height:14px;background:var(--bg);border-radius:4px;width:70%;animation:pulse 1.4s infinite;"></div>
+  </div>`;
+}
+
+async function loadWeather(){
+  const grid=document.getElementById('weatherGrid');
+  const btn=document.getElementById('refreshBtn');
+  btn.disabled=true;btn.textContent='Loading...';
+  grid.innerHTML=LOCALITIES.map(l=>buildSkeleton(l.name)).join('');
+  const results=await Promise.allSettled(LOCALITIES.map(l=>fetchWeather(l.lat,l.lon)));
+  grid.innerHTML='';
+  results.forEach((r,i)=>{
+    if(r.status==='fulfilled'){
+      grid.innerHTML+=buildCard(LOCALITIES[i],r.value);
+    } else {
+      grid.innerHTML+=`<div class="weather-card"><div class="wc-name">${LOCALITIES[i].name}</div><div style="color:var(--muted);font-size:.85rem;margin-top:8px;">Data unavailable</div></div>`;
+    }
+  });
+  btn.disabled=false;btn.textContent='↻ Refresh Weather Data';
+}
+
+loadWeather();
+
+/* Drag-over zone */
+const zone=document.getElementById('uploadZone');
+zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
+zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag-over');handleFiles(e.dataTransfer.files);});
+
+let uploadedFiles=[];
+function handleFiles(files){
+  Array.from(files).slice(0,10).forEach(f=>{
+    if(!f.type.startsWith('image/'))return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      uploadedFiles.push({name:f.name,data:e.target.result});
+      renderPreviews();
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function renderPreviews(){
+  const grid=document.getElementById('previewGrid');
+  grid.innerHTML=uploadedFiles.map((f,i)=>`
+    <div class="preview-item">
+      <img src="${f.data}" alt="Upload ${i+1}">
+      <button class="preview-remove" onclick="removeFile(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removeFile(i){uploadedFiles.splice(i,1);renderPreviews();}
+
+let selectedSeverity='';
+function selectSeverity(btn,level){
+  document.querySelectorAll('.severity-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedSeverity=level;
+}
+
+function submitReport(){
+  const loc=document.getElementById('locName').value.trim();
+  const type=document.getElementById('pollType').value;
+  if(!loc){alert('Please enter a location name.');return;}
+  if(!type){alert('Please select a pollution type.');return;}
+  if(!selectedSeverity){alert('Please select a severity level.');return;}
+  if(uploadedFiles.length===0){alert('Please upload at least one photo of the site.');return;}
+  document.getElementById('successBanner').style.display='block';
+  document.getElementById('locName').value='';
+  document.getElementById('landmark').value='';
+  document.getElementById('pollType').value='';
+  document.getElementById('description').value='';
+  document.getElementById('reporterName').value='';
+  document.getElementById('reporterContact').value='';
+  document.querySelectorAll('.severity-btn').forEach(b=>b.classList.remove('selected'));
+  selectedSeverity='';
+  uploadedFiles=[];
+  renderPreviews();
+  setTimeout(()=>document.getElementById('successBanner').style.display='none',8000);
+}
+
+/* Tab switching */
+function switchTab(tab){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('sec-'+tab).classList.add('active');
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const map=['weather','campaigns','report','compost'];
+    if(map[i]===tab)t.classList.add('active');
+  });
+  document.querySelectorAll('.nav a').forEach((a,i)=>{
+    const map=['weather','campaigns','report','compost'];
+    if(map[i]===tab)a.classList.add('active');
+  });
+}
+</script>
+</body>
+</html>
